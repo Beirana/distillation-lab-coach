@@ -1,62 +1,67 @@
-# 教师控场模式 / Teacher control mode
+# Teacher Control Mode
 
-教师模式的目标是给主讲人一个可立即说出口的解释和下一步，不用现场翻完整工程。
+Teacher control mode gives the instructor an explanation that can be spoken immediately and one clear next action. It should not require the instructor to search through the whole project during class.
 
-## 回答格式 / Response format
+## Response format
 
-教师问“这个是什么”或“下一步怎么办”时，按四项回答：
+When the teacher asks what something is or what to do next, answer in four parts:
 
-1. **现在的位置**：当前处于流程哪一步。
-2. **可以这样说**：提供 20–40 秒中文口播。
-3. **画面或文件**：只给一个最适合展示的入口。
-4. **下一步与截止时间**：告诉教师何时继续、何时切备用材料。
+1. **Current position:** identify the active workflow stage.
+2. **What to say:** provide a natural 20 to 40 second Chinese classroom script.
+3. **What to show:** select one file or visual entry point.
+4. **Next action and cutoff:** state when to continue and when to switch to prepared evidence.
 
-## 一分钟主线 / One-minute storyline
+## One-minute storyline
 
-可以这样说：
+When asked for the main story, produce a concise Chinese explanation covering these points:
 
-> 我们让 7B 教师先解题，但不盲信它，而是用参考答案、格式、长度和结束状态筛选示范。0.5B 学生先做训练前基线，再用 LoRA 学习这些文本示范。训练后仍用同一批题和同一设置比较。今天的 smoke 只验证这条链是否完整，正式 500 条结果才用来讨论效果。
+- the 7B teacher first solves the questions;
+- reference answers, formatting, length, and termination state filter its output;
+- the 0.5B student is measured before training;
+- LoRA trains the student on the retained teacher demonstrations;
+- the same questions and settings are used after training;
+- the classroom smoke run verifies the pipeline, while the archived 500-example experiment is used to discuss effectiveness.
 
-## 常见问题的短答 / Short answers to common questions
+## Short answers to common questions
 
-### 这算知识蒸馏吗？
+### Does this count as knowledge distillation?
 
-算教师示范文本蒸馏：学生学习教师生成并筛选后的答案文本。本课没有使用教师 logits，也没有 KL 温度损失，因此不要说成经典在线 logits 蒸馏的完整复现。
+Yes, it is teacher-demonstration text distillation. The student learns from filtered answer text produced by the teacher. The course does not use teacher logits or a KL-temperature loss, so do not describe it as a complete reproduction of classic online logit distillation.
 
-### 教师比学生大，为什么还会答错？
+### Why can the larger teacher still be wrong?
 
-参数更多不等于每题必对。教师仍可能算错、格式错误、输出过长或异常结束，所以教师输出必须经过自动核对和人工抽查。
+More parameters do not guarantee a correct answer to every question. The teacher can make calculation errors, violate the format, produce excessive output, or terminate abnormally. Its output therefore requires automated checks and human sampling.
 
-### LoRA 是蒸馏吗？
+### Is LoRA the distillation method?
 
-LoRA 是学生学习这些示范时采用的参数高效训练方法。蒸馏描述知识从教师到学生的来源；LoRA 描述学生参数怎样更新。
+LoRA is the parameter-efficient method used to train the student on the demonstrations. Distillation describes where the student's training knowledge comes from; LoRA describes how the student's parameters are updated.
 
-### 为什么先测 before？
+### Why measure `before` first?
 
-没有训练前基线，就不知道训练后变化来自本次实验还是学生模型原本就会。before 是效果判断的坐标原点。
+Without a pre-training baseline, the class cannot tell whether post-training behavior changed because of the current experiment or was already present in the original student. `before` is the reference point for comparison.
 
-### 为什么 smoke 结果可能不变甚至变差？
+### Why might the smoke result stay unchanged or get worse?
 
-它只有八条示范和两步训练，设计目标是暴露工程问题，不是获得统计上可靠的能力提升。
+It uses only eight demonstrations and two training steps. Its purpose is to expose engineering problems, not to obtain a statistically reliable capability gain.
 
-### loss 降了是不是学会了？
+### Does decreasing loss mean the student learned the task?
 
-loss 只说明模型更贴近当前训练文本。是否答对、格式是否合规、能否正常停止，需要独立评测。
+Loss only shows that the model is fitting the current training text more closely. Correctness, output format, and clean termination require independent evaluation.
 
-### Agent 都做了，学生学什么？
+### What do students learn if the Agent runs the commands?
 
-Agent 负责重复命令、日志定位和文件查找。学生必须判断样本能否训练、配置表示什么、结果能证明什么。这三个判断才是实验能力。
+The Agent handles repetitive commands, log location, and file discovery. Students still decide whether an example is suitable for training, what the configuration means, and what the results can support. Those judgments are the core laboratory skills.
 
-## 控场原则 / Classroom control principles
+## Classroom control rules
 
-- 同一问题讲解超过两分钟仍未收束，先回到七步流程图，再决定是否课后展开。
-- 单个学生连接失败超过两分钟，立即并组；多数人失败则切教师备用实例。
-- 一个运行阶段超过教案截止时间，保留现场日志并切归档产物，不把课堂变成环境维修。
-- 学生提出超出本课的问题时，先回答它属于“数据、训练、评测还是模型内部结构”，再给一句结论并记录课后问题。
-- 教师不确定时可以直接说“这个细节我现在不凭印象回答，我们看当前配置或日志”。现场查证本身就是正确示范。
-- 课堂引导模式全程只有三个软检查，每个控制在 20–45 秒；答不上时给提示并继续，不把检查点变成点名考试。
-- 如果机器进度落后，教师说“切快速执行”即可取消后续等待；硬门槛仍保留。
+- If an explanation remains unresolved after two minutes, return to the seven-stage workflow, give one immediate conclusion, and move the deeper question to post-class discussion.
+- If one student cannot connect after two minutes, pair the student with a working group. If most students cannot connect, switch to the teacher's prepared host.
+- If a runtime stage exceeds the lesson cutoff, preserve the live log and switch to archived artifacts. Do not turn the class into environment maintenance.
+- For an out-of-scope question, first classify it as data, training, evaluation, or model internals. Give one sentence and record it for later.
+- When uncertain, say in Chinese that the detail should be checked in the current configuration or log rather than answered from memory. Verifying live evidence is part of the demonstration.
+- Use only three soft checks during classroom guided mode. Keep each within 20 to 45 seconds, give a hint when needed, and continue.
+- If machine progress is slow, the teacher may switch to fast execution. This removes later waiting but keeps every hard gate.
 
-## 课堂固定产出 / Required classroom outputs
+## Required classroom outputs
 
-每组最终交：主机体检、保留/拒绝样本判断、LoRA 配置摘要、run 产物路径、五句出口条。不要按 smoke 正确率排名。
+Each group submits a host preflight result, one retained/rejected example judgment, a LoRA configuration summary, the run artifact path, and a five-sentence exit note. Do not rank groups by smoke-run accuracy.
