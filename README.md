@@ -97,7 +97,13 @@ Skill 在看不到这些材料时，只能使用当前运行产物和公开仓�
 
 ## 安装与可移植性
 
-本目录目前还没有配置公开 remote，因此这里不提供虚构的克隆地址。公开仓库建立以后，再补充可直接执行的 clone 和 update 命令。
+当前开发远端是 private 仓库 [Beirana/distillation-lab-coach](https://github.com/Beirana/distillation-lab-coach)，只有获得授权的 GitHub 账号才能访问。它还不是公开 release。已获得权限的使用者可以克隆完整仓库。
+
+```bash
+git clone https://github.com/Beirana/distillation-lab-coach.git
+```
+
+仓库转为公开并建立稳定 release 或 tag 后，再把课程对外入口固定到对应版本。
 
 使用现有副本时，应把完整的 `distillation-lab-coach` 目录放入宿主能够发现的 Skill 目录，并保持仓库目录名、Skill 目录名和 `SKILL.md` 中的 `name` 一致。不要只复制 `SKILL.md`，否则按需引用的资料和示例会缺失。
 
@@ -111,7 +117,7 @@ Skill 在看不到这些材料时，只能使用当前运行产物和公开仓�
 
 目录布局相似不能证明宿主兼容。正式声明支持某个宿主以前，需要实际验证 Skill 发现、指令加载、终端与 SSH 权限以及审批行为。`agents/openai.yaml` 只提供可选界面元数据，忽略它不会改变实验流程。进一步说明见 [references/compatibility.md](references/compatibility.md)。
 
-课程项目应链接这个独立仓库作为唯一发布源，避免再维护一份复制内容。公开 remote 和稳定 release 建立以后，课程 README 可以链接对应 release 或 tag。需要离线固定版本的 Git 项目可以再评估正式 submodule；普通课程入口使用链接更简单。
+课程项目应把这个独立仓库作为唯一发布源，避免再维护一份复制内容。当前课程目录保留相对链接，方便离线备课，同时注明 private 开发远端。仓库公开并建立稳定 release 后，课程 README 可以链接对应 release 或 tag。需要离线固定版本的 Git 项目可以再评估正式 submodule；普通课程入口使用链接更简单。
 
 ## 仓库结构
 

@@ -36,7 +36,7 @@ Install the complete repository in a directory discovered by the host. Keep the 
 - Claude Code project scope uses `.claude/skills/distillation-lab-coach/`.
 - Other hosts use the Skill directory documented by that host.
 
-This repository does not yet have a public remote. Do not publish placeholder clone or update commands. Add executable installation commands only after the real public URL exists.
+The current development remote is the private repository [Beirana/distillation-lab-coach](https://github.com/Beirana/distillation-lab-coach). Authorized accounts may clone it with `git clone https://github.com/Beirana/distillation-lab-coach.git`. Do not describe it as a public release or promise access to unapproved users. When the repository becomes public, pin course-facing installation instructions to a stable release or tag.
 
 Claim compatibility with a host only after testing Skill discovery, instruction loading, terminal and SSH permissions, and approval behavior. A compatible directory layout does not imply identical sandboxing, network access, or unattended execution.
 
