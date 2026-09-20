@@ -2,6 +2,8 @@
 
 The lab may optionally use [model-download-accelerator](https://github.com/Beirana/model-download-accelerator). It is not a required dependency and does not automatically replace the `distill-course` downloader.
 
+Use the companion skill only when it is actually installed or otherwise available, the user has put model download work in scope, and the selected provider has passed its qualification contract. If any condition is missing, keep the course downloader or a verified preloaded image as the plan.
+
 ## Decision sequence
 
 1. **Is the model already complete?** Verify against the course manifest or a load check. Reuse a complete model and skip downloading.
@@ -22,6 +24,8 @@ Fall back to the official course client or a prepared classroom host whenever a 
 - generate a parallel download plan only after the provider contract has been implemented and tested;
 - keep the course `download-models` path as the default and fallback.
 
+The current course command calls the teacher and student downloads in sequence. A provider client may still download files concurrently inside one model, but that is different from starting both model repositories in parallel. Do not describe the current course command as a two-model parallel downloader.
+
 ## Future benchmark record
 
 ```text
@@ -40,3 +44,5 @@ Measured improvement and limitations:
 ```
 
 Do not publish a numerical speedup in this skill until this record has been completed with measured evidence.
+
+After a successful ModelScope experiment, update this reference only from the saved benchmark and integrity evidence. Record whether the implementation belongs in the course script, the optional companion skill, or a pre-class operator workflow; do not infer that placement from throughput alone.
