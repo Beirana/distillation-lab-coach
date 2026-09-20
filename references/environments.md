@@ -63,18 +63,20 @@ The public `configs/requirements-train.txt` is also a candidate profile. A full 
 
 ## Readiness checks
 
+For the fixed teaching image, apply [validation-philosophy.md](validation-philosophy.md). Check current capabilities, not exact agreement with the reference version table. A course-code refresh does not require dependency resolution or installation.
+
 ```bash
 cd "$COURSE_REPO"
-git rev-parse HEAD
+if test -d .git; then git rev-parse HEAD; else sha256sum bundle-manifest.json; fi
 python scripts/verify_bundle.py
-python scripts/setup_env.py gen
+python -c 'import sys, torch, vllm; print(sys.executable, torch.__version__, vllm.__version__)'
 python scripts/course.py preflight
 ```
 
 Interpret these checks separately:
 
 - `verify_bundle.py` checks managed course files against the bundle manifest.
-- `setup_env.py gen` without `--apply` produces an installation plan. It does not install.
+- `setup_env.py gen` without `--apply` produces an installation plan, not a health check. Use it only when planning an actual repair, not after each course refresh.
 - stock `preflight` records Python, PyTorch, CUDA, GPU, and disk information and checks one visible GPU, BF16, and at least 22 GiB for the unquantized Qwen reference profile.
 - stock `preflight` does not prove that every model file, Python dependency, or training CLI is complete.
 
@@ -88,6 +90,8 @@ test -x "$COURSE_TRAIN_ENV/bin/llamafactory-cli"
 ```
 
 If `COURSE_TRAIN_ENV` is intentionally unset, verify `llamafactory-cli` in the current environment instead.
+
+Check `llamafactory`/`peft` imports with the training interpreter. A `pip check` warning about an unused UI package calls for scoped investigation, not an automatic reinstall. The training source may legitimately remain under the old image-bundled course's `vendor/` directory; keep it in place.
 
 ## Adapted models and hardware
 

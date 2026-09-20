@@ -9,7 +9,11 @@ Use this skill as the shared coach for the `distill-course` laboratory. Do not s
 
 Reply in the user's language. When the user speaks Chinese, explain concepts, commands, evidence, and classroom wording in Chinese. Keep commands, paths, field names, and model identifiers exact.
 
+Default to a **guided terminal session**: the user runs short environment checks, local model verification, and smoke commands in their connected terminal or Jupyter; the Agent explains each line and interprets the output. Run commands for them when requested, but do not silently turn a teaching request into unattended execution. For a remote GPU, recommend passwordless SSH using the user's existing local alias and keys unless they choose another route. Jupyter remains useful for browsing artifacts and as a connection fallback.
+
 ## Resolve the source of truth
+
+Treat the teaching image as a fixed runtime. Course updates belong in a separate code directory, not a dependency reinstall or image rebuild. Before interpreting validation failures or refreshing course code, read [validation-philosophy.md](references/validation-philosophy.md): classify evidence by the affected stage, distinguish capability failure from reference-profile drift, and keep unaffected work moving. Do not turn unrelated network, version, or storage-layout warnings into global blockers; do not relabel genuine corruption or protocol failures as success.
 
 Use these sources in order:
 
@@ -31,7 +35,9 @@ Infer the current stage and immediate intent. Ask a short question only when a m
 - **Set up local SSH for an Agent:** Read [ssh-onboarding.md](references/ssh-onboarding.md) only when no verified host alias already exists.
 - **Run the formal 500-example follow-up:** Use stages 9 through 14 in [stages.md](references/stages.md). Use a new formal run; never expand the classroom smoke run in place.
 - **Diagnose a failure:** Read [troubleshooting.md](references/troubleshooting.md), identify the exact stage, preserve the first failure evidence, and propose the smallest repair.
-- **Discuss model download acceleration:** Read [optional-download-acceleration.md](references/optional-download-acceleration.md). Treat it as an optional pre-class capability until provider support and controlled measurements have been verified.
+- **Models are missing or a download is being planned:** Reuse verified complete files; otherwise default to the course's official ModelScope downloader. Read [download planning](references/optional-download-acceleration.md) for timing, existing-file handling, and optional alternatives. `model-download-accelerator` is a backup, not a prerequisite or a mandatory first probe: consider it when the official route repeatedly fails or stalls, is persistently too slow for the available time, or the user requests it. Do not interrupt a healthy transfer just to switch tools. Record elapsed time and verification separately; do not promise acceleration without a controlled baseline.
+- **Download wait, smoke-stage transition, or concrete file explanation:** Proactively offer the relevant video/file walkthrough from [single-sample-walkthrough.md](references/single-sample-walkthrough.md); do not wait for the user to ask. Give one short orientation and an actual file/video location, then ask whether to inspect together, hear more, or continue. The deeper explanation is optional, not the offer. Respect skipping or an explicitly delegated continuous run; do not infer understanding from silence. Overlap authorized downloads with independent teaching, not GPU stages that require incomplete weights.
+- **Refresh course code on a frozen teaching image:** Read [repository-sync.md](references/repository-sync.md) and [validation-philosophy.md](references/validation-philosophy.md). Guide retrieval of the paired available course version into a separate live checkout. Reuse existing interpreters, training CLI, models and data. Keep the image-bundled code (it may own editable-installed training sources); never blindly follow the latest branch or reinstall dependencies merely because the code path changed.
 - **Install or publish the skill on another host:** Read [compatibility.md](references/compatibility.md).
 
 Answer the immediate question before continuing an active workflow. A request for explanation does not authorize a terminal action. A request to run a stage authorizes only the ordinary, in-scope operations required by that stage.
@@ -77,16 +83,20 @@ Use questions to improve understanding, not to classify the user's identity or g
 - why an adapter needs its matching base model while a merged export can be loaded directly;
 - why a completed smoke run is weaker evidence than a fixed-protocol formal evaluation.
 
-Accept a field pointer, a binary choice, or one plain sentence. If the learner does not know, give one concrete hint, explain the answer, and continue unless a human judgment gate is involved.
+Accept a field pointer, a binary choice, or one plain sentence. If the learner does not know, give one concrete hint and explain. Ask whether to inspect together, hear more, or continue; accept the user's choice without demanding a correct answer.
 
-## Enforce human judgment gates
+In guided mode, leave room for the user's choice rather than immediately answering every question yourself. In delegated execution, explain briefly without repeated pauses and label it as Agent explanation, not a learner answer. Record what was offered, answered, skipped, delegated, or left unanswered; never mark the learner as having watched, read, or understood because the Agent displayed an explanation. Agent-run elapsed time is not measured learner classroom time.
+
+## Distinguish learning checkpoints from execution constraints
+
+Before training, ask whether the user has looked at a sample and the rendered configuration. Offer to inspect one together. This is a conversational checkpoint, not an exam or a mandatory manual sign-off. The user may say "continue" or delegate inspection. Point out any concrete mismatch you find; do not block merely because a reading step was skipped.
 
 Stop before continuing when:
 
 - the teacher and student roles are unclear or a model/data change has not been accepted;
 - a new run would overwrite or mix with an existing run;
-- generated demonstrations have not been inspected before training;
-- the rendered model, data, output path, template, or training mode has not been inspected;
+- required model files are incomplete or fail integrity/load checks;
+- the rendered model, data, output path, template, or training mode is actually incompatible with the requested run;
 - a classroom smoke run is about to use the final test;
 - a formal test is requested before `freeze`;
 - the action could expose credentials, modify unrelated data, or affect another user's process.
@@ -102,7 +112,7 @@ The absence of a prepared formal merged model blocks only the live two-service c
 - Never silently change models, data, prompts, seeds, decoding, LoRA settings, scoring, or evaluation splits.
 - Never delete or overwrite an existing run. Choose a new simple run ID.
 - Never use broad `killall` or name-wide `pkill`. Inspect the stage supervisor and manage only processes created by the current task.
-- Do not install dependencies, download large models, or benchmark download concurrency during class unless the user explicitly changes the lesson plan.
+- Large downloads may run in the background during the lesson. Record start/end, bytes, process exits, and verification separately. Use the waiting-time teaching route; a late download can require prepared evidence. Avoid class-time reinstallations or repeated performance scans unless requested.
 - Do not treat a launched process, existing file, lower loss, or one good answer as proof of stage success.
 - Preserve failure logs. Separate direct facts, remaining uncertainty, and the fallback that keeps the lesson moving.
 - Keep format adherence and numerical correctness as separate observations.
@@ -115,6 +125,6 @@ For the 60-minute session, finish after:
 - adapter and merged artifacts have been distinguished;
 - the prepared base and formal merged comparison has been completed or honestly replaced by static evidence;
 - services have been stopped and GPU state checked;
-- the user can state why smoke does not prove capability improvement.
+- the smoke-versus-effectiveness boundary has been explained, even if the user chooses to skip the learning question.
 
 For a formal run, finish only after the required dev comparison, report, freeze, final test, final report, and process cleanup are complete, or after every missing item has been explicitly recorded.

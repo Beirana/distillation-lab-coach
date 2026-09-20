@@ -1,5 +1,7 @@
 # Artifact Map
 
+For video-plus-Jupyter explanation, use [single-sample-walkthrough.md](single-sample-walkthrough.md): trace `source_id` through a real audit/train pair and distinguish current retention from an archived rejection.
+
 When explaining an artifact, first identify its authoritative stage and run ID. Then state what it supports and what it cannot prove by itself. A file from an archive, prepared bundle, or another host must remain labeled as such.
 
 ## Contract, environment, and data

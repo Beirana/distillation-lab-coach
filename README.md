@@ -8,7 +8,9 @@
 
 本 Skill 面向公开课程仓库 [Beirana/distill-course](https://github.com/Beirana/distill-course)，用于讲解、执行和诊断教师文本蒸馏实验。它可以通过宿主 Agent 已有的终端与 SSH 能力分阶段运行 smoke，也可以解释 LoRA 配置、运行产物、训练前后结果和正式实验边界。
 
-当前内容按 `distill-course` 提交 `d7761de6a58b3d0566cdde57797bd70ecd3f9c3b` 校对。这个提交是现阶段的测试基线，不是永久版本锁。实际运行前仍要读取当前 checkout 的 README、`configs/course.json` 和 Git 提交；若采用其他模型、路径或资源参数，应把差异记录为适配运行。
+原流程按 `distill-course` 提交 `d7761de6a58b3d0566cdde57797bd70ecd3f9c3b` 校对；配套本地候选提交为 `d5ae90bab7c59da1b6055dee838dafa91056bfbc`，含新增登记接口，已通过 30 项离线 CPU 测试及 bundle 校验，但未在新镜像上完成新接口的 GPU 端到端验收。当前尚未推送，不能假定 GitHub 可取得；可使用明确提供的本地候选包。旧镜像官方路线不要求升级。实际运行前读取 README、配置和 `course.py --help`；镜像无 `.git` 时记录 bundle 身份。其他模型、路径与资源参数可作为适配运行。
+
+默认由用户在连接终端/Jupyter 操作，Agent 逐行讲解与解读证据；用户要求时可代执行。远程 GPU 推荐复用本机免密 SSH，除非用户另选入口。数据和配置阅读是可询问、可跳过讲解的学习检查点，不是考试或人工签字门槛。
 
 这个 Skill 不把实验藏进一个看不见的一键脚本。它始终区分下面几件事。
 
@@ -31,6 +33,10 @@
 
 这些路线只改变节奏和回答形态，不改变权限。任何使用者都沿同一条实验状态机前进，也都要遵守相同的凭据边界、运行隔离和证据要求。
 
+## 设计原则：镜像固定，课程包独立更新
+
+镜像暂不更新。需要新能力时，Coach 引导获取配套课程包，复用原生成/训练环境和模型数据；不因路径、补丁版本或无关网络差异自动重装。验证按当前阶段的真实能力判断，警告只影响相关工作，模型损坏和正式评测协议仍严格保护。完整中文说明见 [验证设计原则](references/validation-philosophy.md)，获取与切换见 [课程包更新](references/repository-sync.md)，配套提交见 [兼容性记录](references/compatibility.md)。本地提交与 GitHub 推送是两件事，不能声称未推送的新提交已可远程拉取。
+
 课堂节奏与展示方法见 [references/classroom-support.md](references/classroom-support.md)。生成端、训练端和硬件适配见 [references/environments.md](references/environments.md)。本地 Agent 尚未建立可验证的 SSH 主机别名时，再读取 [references/ssh-onboarding.md](references/ssh-onboarding.md)。
 
 ## 课堂主线
@@ -40,7 +46,7 @@ flowchart TD
     A[确认当前任务与剩余时间] --> B[读取 README、course.json 与 Git commit]
     B --> C{环境、模型和数据已就绪}
     C -- 是 --> D[生成 smoke 示范并查看审计]
-    C -- 否 --> X[判断能否在课前补齐或切换准备好的材料]
+    C -- 否 --> X[缺模型默认官方下载，后台传输与视频文件讲解重叠，异常时评估备选]
     X --> C
     D --> E[完成训练前 before 评测]
     E --> F[生成并检查 LoRA 配置]
@@ -81,13 +87,17 @@ SSH 主机别名是 autodl-course，run ID 是 smoke-group-03。
 
 更多请求写法见 [examples/prompts.md](examples/prompts.md)。
 
-## 可选的模型下载加速
+## 默认官方下载，并行加速仅作备选
 
-[model-download-accelerator](https://github.com/Beirana/model-download-accelerator) 是可选的课前能力，不是本实验的依赖，也不会自动替代课程原有下载流程。调用前需要先确认模型是否已经完整存在，再检查来源是否满足下载加速 Skill 的 Provider 资格合同。
+[model-download-accelerator](https://github.com/Beirana/model-download-accelerator) 仅作备选。已有完整模型先验证复用；否则默认使用课程官方 ModelScope 下载器，无需先安装或探测并行技能。仅当官方路线反复失败、停滞、持续过慢影响课时，或用户主动要求时，再评估 ModelScope 并行或 HF/hf-mirror 等替代路线及课程登记兼容性。不因“并行”字样中断健康下载，也不把两个模型依次下载误称为客户端内部单线程。
 
-当前 `distill-course` 主要通过 ModelScope 获取模型。下载加速器尚未声明支持 ModelScope，因此在 Provider 资格验证和真实实例计时完成以前，课程仍应使用公开仓库提供的下载流程、已经校验的镜像或课前准备好的模型。
+ModelScope 已完成一次约 16.24 GB、1549 秒的双进程传输，随后重新核验统一仓库快照；这是实验性适配，非普遍稳定/提速保证。HF/hf-mirror 的元数据、校验和与课程登记仍需适配验证。`modelscope download` 不是 aria2 产物的纯验证命令，可能重下并补缓存记录。具体证据和边界见下载参考。
 
-本 Skill 暂不声明具体加速倍数。实测应固定模型与 revision，并记录总耗时、持续吞吐、失败与重试次数以及最终文件完整性。详细条件和记录模板见 [references/optional-download-acceleration.md](references/optional-download-acceleration.md)。
+另一次新实例官方路线用时 978.135 秒（约 16 分 18 秒），传输总量相同；实例和时间不同，这不是受控对照，不能证明某个工具必然更快。本 Skill 不声明具体加速倍数。日常只记录实际耗时、退出与校验，不为选下载器额外跑一次完整基线。详细条件和记录模板见 [references/optional-download-acceleration.md](references/optional-download-acceleration.md)。
+
+下载等待时使用 [单样本视频与 Jupyter 文件讲解](references/single-sample-walkthrough.md)，从候选题到 audit、train.json、LoRA、merge 和 dev 同题对照；该参考也包含 `watch` 等便捷命令。
+
+讲解入口由助教在下载等待和 smoke 关键阶段主动提供，不等人工提问；可选的是讲解深度和是否跳过。引导模式给用户回应机会，代执行模式简短说明后继续，但不能将自问自答记为用户已看懂，也不能把 Agent 跑通用时等同于学生跟课用时。
 
 ## 公开证据边界
 
@@ -138,6 +148,8 @@ distillation-lab-coach/
     ├── environments.md
     ├── ssh-onboarding.md
     ├── troubleshooting.md
+    ├── single-sample-walkthrough.md
+    ├── repository-sync.md
     ├── compatibility.md
     └── optional-download-acceleration.md
 ```

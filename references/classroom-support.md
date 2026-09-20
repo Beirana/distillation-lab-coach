@@ -1,8 +1,16 @@
 # Classroom Support
 
-Use this reference when the user asks how to explain a stage, ask a learning question, manage the 60-minute pace, choose evidence to display, or recover after a classroom delay. Do not choose a workflow based on whether the human user is an instructor or a learner. Everyone follows the same stages in [stages.md](stages.md).
+Use this reference proactively during a guided classroom run, download wait, or smoke-stage transition, and when the user asks for explanation. The learner need not know which question to ask before teaching is offered. Do not choose a workflow based on whether the human user is an instructor or a learner. Everyone follows the same stages in [stages.md](stages.md).
 
 In this reference, **teacher** and **student** refer only to model roles.
+
+Default to the user operating their connected terminal/Jupyter with the Agent explaining. Recommend existing passwordless SSH for remote GPU work unless the user chooses otherwise. During downloads use [single-sample-walkthrough.md](single-sample-walkthrough.md), including its artifact map, video suggestions, and monitoring commands. Start a qualified download first so explanation overlaps it.
+
+## Proactive offers, optional depth
+
+At a natural checkpoint, provide a short purpose/command/output explanation and one real artifact location. Offer “inspect together / explain more / continue” rather than waiting for a learner question or automatically delivering the whole artifact map. Download waits are a natural time to offer the single-sample video and trace. After generation offer audit → train.json; before training offer the rendered LoRA config; after export offer adapter/base/merged; after dev offer one paired prediction. Do not repeat an explanation already covered unless requested or the current artifact changes the conclusion.
+
+In guided mode, allow a reply. If the user skips, continue without a quiz requirement. If continuous execution is delegated, explain briefly and continue within that scope; do not count the Agent's own answer as user understanding. Authorized background downloads can continue while the learner decides. These are teaching choices, not new integrity gates.
 
 ## Response shape
 
@@ -52,7 +60,7 @@ Question: Why does a completed smoke chain or one good conversation not prove ca
 
 Expected idea: eight demonstrations, two training steps, dev5, or one selected prompt are too small and selective. Capability claims require the reviewed formal run and a fixed evaluation protocol.
 
-Record a check as `confirmed`, `hinted`, or `skipped` only for teaching feedback, never as a grade.
+Record actual interaction: `offered`, `user_answered`, `hinted`, `skipped`, `delegated`, or `no_response`. `hinted` means a hint was provided, not that the learner understood. A self-supplied explanation is `agent_explained`, never a learner confirmation. These records are teaching feedback, not grades.
 
 ## Short answers to common questions
 
@@ -78,11 +86,11 @@ The reference smoke run retains only eight demonstrations and trains for two ste
 
 ### Does decreasing loss mean the student learned the task?
 
-It means the optimizer fit the current training text more closely. Correct answers, required formatting, and normal termination still need independent evaluation.
+It is a training signal, not a capability result. Losses on different step/batch inputs alone do not prove that every training example is fitted better. Correct answers, required formatting, and normal termination still need independent evaluation.
 
 ### What remains for the user when the Agent runs commands?
 
-The Agent can reduce repetitive terminal work and locate evidence. The user still approves model and data changes, judges whether demonstrations are suitable, confirms the rendered training configuration, interprets errors, decides whether evidence supports a claim, and authorizes freeze and final test.
+The Agent explains and locates evidence; the user can execute short checks and smoke or request execution. Ask whether they have seen a sample and the configuration, offer to inspect together, then respect "continue" or delegated inspection. Do not demand a quiz answer or mandatory manual signature. Model/data changes, final-test protocol, and concrete technical inconsistencies still need explicit treatment.
 
 ### Why separate formatting from correctness?
 
@@ -118,7 +126,7 @@ Always identify those numbers as archived formal evidence, not the result of the
 - If two vLLM services do not fit, use a verified shared host, load the models sequentially, or compare saved predictions.
 - If a result differs from a displayed archive, compare run ID, commit, model roles, split, prompts, decoding, and configuration. Record the real difference instead of forcing the archived number.
 - When uncertain, inspect the current configuration, log, or artifact rather than answering from memory. The verification itself is part of the lesson.
-- Never relax a hard gate for pacing. Credentials, run collisions, uninspected training configuration, final-test isolation, and unrelated processes remain protected.
+- Preserve real constraints: credentials, run collisions, corrupt/incomplete models, incompatible configuration, final-test isolation, and unrelated processes. Not having read a file is a conversational checkpoint, not a hard gate.
 
 ## Required classroom outputs
 
@@ -141,7 +149,7 @@ Do not request private keys, passwords, access tokens, or full model weights as 
 |---|---|---|
 | Teacher generation completes | `generation_audit.jsonl` beside `dataset/train.json` | Retention does not prove perfect reasoning |
 | Before evaluation completes | One before prediction plus `before_summary.json` | dev5 is a pipeline sample, not a benchmark estimate |
-| Before training | Rendered `train_config.yaml` | Paths and steps must be approved before mutation |
+| Before training | Rendered `train_config.yaml` | Check paths, mode and steps against the requested run; offer explanation without requiring manual sign-off |
 | Training completes | `train_complete.json` plus adapter configuration | Loss change does not prove answer improvement |
 | Export completes | `export_complete.json` plus `merged_manifest.json` | A manifest proves artifact identity, not model quality |
 | Smoke student evaluation completes | Matched before/student predictions | Same protocol makes comparison meaningful; n=5 remains small |

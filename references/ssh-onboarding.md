@@ -1,6 +1,6 @@
 # Windows SSH Onboarding for a Local Agent
 
-Read this reference only when the user does not already have a verified SSH host alias. Complete it before class when possible.
+Passwordless SSH is the recommended remote-GPU route unless the user chooses another. Reuse an existing verified Windows alias and key without reauthorization; read setup steps only when no usable alias exists. Complete setup before class when possible. Jupyter remains convenient for file teaching and as a fallback.
 
 The human establishes trust and authentication once. The Agent uses only the resulting alias in non-interactive mode. The Agent never receives a password, private-key passphrase, or private-key contents.
 

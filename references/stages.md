@@ -6,6 +6,8 @@ The authoritative stage numbers are 0 through 14. Keep these numbers when explai
 
 Commands below use overridable variables instead of literal placeholder syntax. Before running them, inspect the checked-out repository and adapt paths to the current host rather than copying remembered values.
 
+Each new non-interactive SSH command starts a new shell: a PATH export in an earlier SSH command does not configure the next one. Use the discovered absolute interpreter or repeat a verified environment prefix for every remote call. For multiline Python from Windows, prefer a PowerShell single-quoted here-string piped to the remote interpreter over deeply nested shell quotes. Check critical steps individually; the last command's success cannot clear an earlier failure.
+
 ```bash
 export COURSE_REPO="${COURSE_REPO:-/root/distill-course}"
 export COURSE_DATA_ROOT="${COURSE_DATA_ROOT:-/root/distill-work}"
@@ -31,7 +33,7 @@ For every executed stage, report:
 
 ## The 60-minute classroom selection
 
-The classroom route requires the repository, models, data, environments, SSH access, and a verified formal merged model to be ready before class. Read [environments.md](environments.md) when checking the two Python environments. Read [ssh-onboarding.md](ssh-onboarding.md) only when a local SSH alias has not yet been prepared.
+Prepare the repository, environments, and access before class where possible. Recommend passwordless SSH for remote GPU work unless the user chooses otherwise; reuse a verified alias, and read [ssh-onboarding.md](ssh-onboarding.md) only if setup is needed. Read [environments.md](environments.md) for the two Python environments. The table below is the models-ready route; a prepared formal merged model is needed only for that particular qualitative demo.
 
 | Time | Authoritative stages used | Live outcome |
 |---|---|---|
@@ -45,7 +47,9 @@ The classroom route requires the repository, models, data, environments, SSH acc
 | 51 to 56 minutes | 11, read-only evidence only | Interpret verified formal dev100 evidence without running the formal stage |
 | 56 to 60 minutes | 12 cleanup and the cleanup checks from 14 | Stop classroom services, check GPU state, and assign the formal post-class route |
 
-Stages 2 through 4 are pre-class gates. Executing stages 9 through 11, 13, and the formal archiving work in stage 14 belongs to the post-class workflow, although a fast group may start stage 9. The classroom may read identified stage 11 evidence and reuse the process-cleanup checks from stage 14; that does not mean it executed those formal stages. The classroom does not wait for large downloads or a 500-example generation job.
+If weights are missing, default to the course's official downloader (stage 3), start it early, and overlap stages 4 and 5 plus the [single-sample file walkthrough](single-sample-walkthrough.md). Parallel acceleration is a backup for persistent trouble or an explicit request, not a prerequisite. A candidate schedule is 0–5 connection/start download; 5–25 video and Jupyter artifacts; 25–30 verify/register if complete; 30–48 live smoke chain; 48–56 qualitative or saved comparisons; 56–60 recap and cleanup. This is not a measured 60-minute guarantee. At minute 30, if required weights are still unavailable, offer prepared evidence/shared host and keep unfinished work explicit. Do not delete/restart a healthy transfer merely for pacing.
+
+Executing stages 9–11, 13, and formal archiving belongs to post-class work, although a fast group may start stage 9. Reading formal results does not mean executing that formal run.
 
 Use three soft learning checks during the classroom route:
 
@@ -53,7 +57,7 @@ Use three soft learning checks during the classroom route:
 2. before training in stage 8, ask whether frozen base weights still participate in the forward pass;
 3. after stage 8 or 12, ask why a completed smoke chain or one conversation does not prove capability improvement.
 
-Accept a field pointer, a binary choice, or one plain sentence. Give one hint when needed, explain, and continue. These checks are feedback, not grades.
+Proactively offer the relevant artifact explanation even when no question was asked. Accept a field pointer, a binary choice, or one plain sentence. In guided mode give the user room to answer or choose a skip; provide a hint when needed. In delegated continuous mode explain briefly and continue, recording Agent explanation rather than learner understanding. These checks are feedback, not grades, and skipping them is not a technical failure.
 
 ## Stage 0: Confirm repository and run identity
 
@@ -61,14 +65,18 @@ Purpose: bind code, configuration, and later evidence to one checked-out version
 
 ```bash
 cd "$COURSE_REPO"
-git remote -v
-git rev-parse HEAD
-git status --short
+if test -d .git; then
+  git remote -v
+  git rev-parse HEAD
+  git status --short
+else
+  sha256sum bundle-manifest.json
+fi
 python scripts/verify_bundle.py
 python -m json.tool configs/course.json
 ```
 
-`git rev-parse HEAD` records the implementation version. `verify_bundle.py` checks managed course files against the bundle manifest; it does not prove that dependencies, models, GPU resources, or run data are ready.
+`git rev-parse HEAD` records the version when `.git` exists. An image may omit `.git`; record its `bundle-manifest.json` hash and successful bundle verification instead of declaring it broken. Non-interactive SSH may need the discovered absolute Python path (the rehearsal used `/root/miniconda3/bin/python`). Bundle verification does not prove dependencies, models, GPU, or data ready.
 
 Inspect existing runs before choosing a new ID:
 
@@ -103,11 +111,12 @@ First inspect, then plan:
 
 ```bash
 ls -ld "$COURSE_DATA_ROOT" "$COURSE_DATA_ROOT/models" "$COURSE_DATA_ROOT/cache" 2>/dev/null || true
-python scripts/setup_env.py gen
 python scripts/hello.py
 ```
 
-Only run an installer with `--apply` after reviewing its plan and confirming that the selected Python prefix is the intended one. If a separate training environment is used, set it only after verifying the executable:
+Resolve symlink targets, not just link existence. A fresh instance may retain model/cache links while the data-disk target directories are absent. Confirm the intended mounted target and create only the missing task directories before downloading; do not replace the links, migrate data, or reinstall software by default.
+
+For a working fixed image, do not run dependency planning/installers merely because course code moved. Check actual imports and stage capability as in [environments.md](environments.md). Only when a missing capability warrants repair, review an installation plan and the intended interpreter before `--apply`. If a separate training environment is used, set it only after verifying the executable:
 
 ```bash
 export COURSE_TRAIN_ENV="${COURSE_TRAIN_ENV:-/root/train-env}"
@@ -118,14 +127,25 @@ For a validated single-environment route, leave `COURSE_TRAIN_ENV` unset and ver
 
 ## Stage 3: Obtain and verify the two models
 
-Purpose: obtain one larger teacher model and one smaller student model with traceable source and integrity evidence.
+Purpose: obtain one larger teacher and one smaller student with traceable source and integrity evidence. Follow [download planning](optional-download-acceleration.md): reuse verified complete files; otherwise default to the course's official ModelScope route. Parallel transfer is optional, reserved for persistent download problems or a user request. Record timing and source. Inspect `--help` before using version-dependent commands; after confirming weights are genuinely missing, use:
 
 ```bash
 cd "$COURSE_REPO"
 python scripts/course.py download-models
 ```
 
-This is a pre-class operation. Verify both model directories, source or revision information, file inventory, configuration, and tokenizer loading. The public course command downloads the teacher and student in sequence. Parallel ModelScope download remains optional until its implementation, failure recovery, and final integrity have been measured on the target host.
+Verify model directories, source/revision, inventory, configuration, and tokenizer loading. The official route downloads teacher and student sequentially; its client may parallelize files internally. Only if `--help` lists it, run `python scripts/course.py model-status`; the old image does not have this new local interface. Otherwise inspect the existing course manifests and perform local config/tokenizer/load checks, without repeating downloads. Hashing is not a once-per-second progress monitor.
+
+When a trusted source supplied files, verify locally instead of calling `modelscope download` as a supposed validator. On a tested course version containing `register-models`, use actual source-manifest paths (set the variables first):
+
+```bash
+python scripts/course.py register-models \
+  --teacher-source-manifest "$TEACHER_SOURCE_MANIFEST" \
+  --student-source-manifest "$STUDENT_SOURCE_MANIFEST"
+python scripts/course.py model-status
+```
+
+The provisional ModelScope route completed one transfer and later pinned-snapshot revalidation. The old image lacks this registration command; use [repository-sync.md](repository-sync.md), not fabricated manifests or repeated official downloads. HF non-LFS metadata may lack source SHA256 required by strict registration; disclose and resolve that provenance gap as described in download planning.
 
 If verified models already exist in an image, cache, offline package, or persistent disk, reuse them and record their origin. Do not start a large unverified download merely because the default online check failed.
 
@@ -297,7 +317,7 @@ else
 fi
 ```
 
-Inspect the full audit and at least ten retained demonstrations before approving training. Importing `teacher500` proves that verified material was reused; it does not prove that this host generated it.
+Offer to inspect the audit and retained demonstrations (ten is a suggestion, not a requirement). Ask whether to inspect together or continue; the user may delegate. Importing `teacher500` proves reuse, not generation on this host.
 
 ## Stage 10: Complete formal before, configuration, training, and export
 
@@ -310,9 +330,9 @@ python -m json.tool "$FORMAL_DIR/train_config.yaml"
 python -m json.tool "$FORMAL_DIR/export_config.yaml"
 ```
 
-Stop here and inspect the formal configuration before authorizing training. Verify the student model, dataset and output paths, template, LoRA parameters, precision, epochs, batch and accumulation, and the before summary. The reference configuration uses 500 demonstrations, LoRA rank 8, alpha 16, target `all`, three epochs, and an effective batch size of 16. Resource parameters may be adapted, but the rendered configuration must be preserved and the result must not be presented as an unqualified reproduction of the reference.
+Ask whether the user has seen the configuration and before summary, and offer an explanation. Check paths and compatibility; an actual mismatch needs correction, while skipping a learning question does not block training. The reference uses 500 demonstrations, rank 8, alpha 16, target `all`, three epochs, effective batch 16. Preserve adapted configurations and label adapted results.
 
-Only after that human gate passes, train and verify its completion record:
+When the user chooses to continue and technical prerequisites hold, train and verify:
 
 ```bash
 python scripts/course.py train --run "$FORMAL_RUN"
@@ -363,7 +383,7 @@ Before calling this a before/after comparison, confirm that the formal merged mo
 
 For a run-based prepared model, inspect its `request.json`, `export_config.yaml`, and `merged_manifest.json` and compare the recorded student identity and revision with the current base. For a directly supplied model directory, require the course provider or user to identify an equivalent provenance directory. If that provenance is missing, the services may still be shown as two named models, but not as a verified before/after pair.
 
-When claiming a verified before/after pair under the current course schema, run this gate from any free terminal. A direct-directory handoff must set `DEMO_PROVENANCE_DIR`; a run-based handoff can derive it from `DEMO_RUN`.
+Run the following preliminary configuration/provenance check from any free terminal. It compares labels, not historical base bytes: matching `master` or another mutable branch is insufficient to claim a verified before/after pair. A direct-directory handoff must set `DEMO_PROVENANCE_DIR`; a run-based handoff can derive it from `DEMO_RUN`.
 
 ```bash
 if test -z "${DEMO_PROVENANCE_DIR:-}" && test -n "${DEMO_RUN:-}"; then
@@ -386,7 +406,7 @@ else
 fi
 ```
 
-The identity comparison returns nonzero when the current course `student` or `modelscope_revision` differs from the prepared request. Also inspect the export base path and template plus the merged manifest. An adapted provider schema must supply an equivalent immutable model/revision comparison rather than deleting this gate.
+The preliminary comparison returns nonzero when the current course `student` or `modelscope_revision` differs from the prepared request. Also inspect the export base path, template and merged manifest. A strict before/after claim additionally needs a matching immutable base snapshot or historical base-file hashes tied to the formal run and checked against the current base. A matching path, `master` label or merged manifest alone cannot establish that. If the extra evidence is unavailable, explain the limitation and offer the two identified models as a qualitative demonstration or use saved predictions; do not block unrelated smoke work or fabricate provenance.
 
 The `0.25` memory fractions, `2048` context length, `bfloat16` precision, and example ports below are reference values for the tested Qwen setup. Replace them only with values already validated for the current models and host; do not discover serving limits during the timed class.
 
@@ -401,6 +421,7 @@ export SERVE_MAX_LEN="${SERVE_MAX_LEN:-2048}"
 export SERVE_DTYPE="${SERVE_DTYPE:-bfloat16}"
 if test -f "$BASE_MODEL_PATH/config.json"; then
   vllm serve "$BASE_MODEL_PATH" \
+    --host 127.0.0.1 \
     --port "$BASE_PORT" \
     --served-model-name base \
     --gpu-memory-utilization "$BASE_GPU_UTIL" \
@@ -428,6 +449,7 @@ export SERVE_MAX_LEN="${SERVE_MAX_LEN:-2048}"
 export SERVE_DTYPE="${SERVE_DTYPE:-bfloat16}"
 if test -n "${DEMO_MODEL_PATH:-}" && test -f "$DEMO_MODEL_PATH/config.json"; then
   vllm serve "$DEMO_MODEL_PATH" \
+    --host 127.0.0.1 \
     --port "$DISTILLED_PORT" \
     --served-model-name distilled \
     --gpu-memory-utilization "$DISTILLED_GPU_UTIL" \
@@ -526,7 +548,7 @@ The `distill-exercises` 10,000-example source is a research input, not a verifie
 | Condition | Action |
 |---|---|
 | Connection exceeds 2 minutes | Move to a working group, prepared shared host, or platform terminal |
-| A required model is missing | Use a verified image, cache, or prepared host; do not wait for a large class-time download |
+| A required model is missing | Default to the official course downloader; use parallel acceleration only as a backup; overlap with file/video teaching and use prepared evidence if time runs out |
 | Data preparation exceeds 3 minutes | Use verified prepared material and record its source |
 | Smoke generation exceeds 3 minutes without explainable progress | Preserve logs and switch to identified smoke archive evidence |
 | Training or export fails | Preserve the run and logs; explain the failure with archived artifacts without relabeling them |
