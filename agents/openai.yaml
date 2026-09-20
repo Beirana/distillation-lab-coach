@@ -1,0 +1,4 @@
+interface:
+  display_name: "蒸馏实验助教"
+  short_description: "师生共用的蒸馏实验讲解、执行与故障诊断助手"
+  default_prompt: "使用 $distillation-lab-coach；先选择课堂引导、快速执行、自由问答或故障诊断，再从当前阶段继续。"
