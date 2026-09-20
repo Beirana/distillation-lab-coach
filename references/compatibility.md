@@ -14,14 +14,14 @@ The core does not call a Codex, OpenAI, Claude, or other agent-host API. Experim
 
 This version has been checked against `distill-course` commit `d7761de6a58b3d0566cdde57797bd70ecd3f9c3b`. Treat that commit as the current tested baseline, not as a permanent lock.
 
-Local candidate pairing at the 2026-09-20 handoff (not yet pushed):
+Candidate pairing at the 2026-09-20 handoff (pushed to GitHub):
 
 | Component | Commit | Verified scope |
 |---|---|---|
 | Course candidate | `d5ae90bab7c59da1b6055dee838dafa91056bfbc` | 30 offline CPU tests and bundle verification; adds local registration and stage-aware checks |
 | Optional downloader | `8db77af25096bb5564957732166c132efa4ce051` | 9 offline tests; ModelScope snapshot adapter remains provisional |
 
-Do not present these local commits as downloadable GitHub releases until remote availability is verified. A supplied local archive is a valid delivery option; verify its digest and the course's bundle manifest. These candidates are not prerequisites for the default official-client route. The 2026-09-20 37-minute SOL rehearsal used the old image bundle, not the candidate's new registration API; it does not certify the new path end to end or measure learner classroom time. See [repository-sync.md](repository-sync.md).
+These commits are available in their GitHub repositories; they are not tagged releases or newly GPU-accepted versions. A supplied local archive is also a valid delivery option; verify its digest and the course's bundle manifest. These candidates are not prerequisites for the default official-client route. The 2026-09-20 37-minute SOL rehearsal used the old image bundle, not the candidate's new registration API; it does not certify the new path end to end or measure learner classroom time. See [repository-sync.md](repository-sync.md).
 
 Before execution, inspect the checked-out course README, `configs/course.json`, Git commit, and existing run directories. A reference reproduction should use the verified course contract. An adapted run may use different models, paths, precision, or resource parameters when the differences are explicit and the resulting evidence remains traceable.
 

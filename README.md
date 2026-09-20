@@ -8,7 +8,7 @@
 
 本 Skill 面向公开课程仓库 [Beirana/distill-course](https://github.com/Beirana/distill-course)，用于讲解、执行和诊断教师文本蒸馏实验。它可以通过宿主 Agent 已有的终端与 SSH 能力分阶段运行 smoke，也可以解释 LoRA 配置、运行产物、训练前后结果和正式实验边界。
 
-原流程按 `distill-course` 提交 `d7761de6a58b3d0566cdde57797bd70ecd3f9c3b` 校对；配套本地候选提交为 `d5ae90bab7c59da1b6055dee838dafa91056bfbc`，含新增登记接口，已通过 30 项离线 CPU 测试及 bundle 校验，但未在新镜像上完成新接口的 GPU 端到端验收。当前尚未推送，不能假定 GitHub 可取得；可使用明确提供的本地候选包。旧镜像官方路线不要求升级。实际运行前读取 README、配置和 `course.py --help`；镜像无 `.git` 时记录 bundle 身份。其他模型、路径与资源参数可作为适配运行。
+原流程按 `distill-course` 提交 `d7761de6a58b3d0566cdde57797bd70ecd3f9c3b` 校对；配套候选提交为 `d5ae90bab7c59da1b6055dee838dafa91056bfbc`，含新增登记接口，已通过 30 项离线 CPU 测试及 bundle 校验，但未在新镜像上完成新接口的 GPU 端到端验收。该固定提交已推送 GitHub，也可使用明确提供的匹配离线包；这不等于已发布稳定 release。旧镜像官方路线不要求升级。实际运行前读取 README、配置和 `course.py --help`；镜像无 `.git` 时记录 bundle 身份。其他模型、路径与资源参数可作为适配运行。
 
 默认由用户在连接终端/Jupyter 操作，Agent 逐行讲解与解读证据；用户要求时可代执行。远程 GPU 推荐复用本机免密 SSH，除非用户另选入口。数据和配置阅读是可询问、可跳过讲解的学习检查点，不是考试或人工签字门槛。
 

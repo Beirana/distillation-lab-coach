@@ -1,6 +1,6 @@
 # Course Repository Refresh on a Frozen Image
 
-Availability note (2026-09-20): `register-models`, `verify-models`, and `model-status` are included in local candidate commit `d5ae90bab7c59da1b6055dee838dafa91056bfbc`, absent from the rehearsal image. The candidate passed 30 offline CPU tests and bundle verification; its new registration path has not completed a new-image GPU end-to-end run. At this handoff the commit has not been pushed. Use a supplied candidate bundle or confirm remote availability before promising retrieval; cloning the old published commit does not supply these commands. Ordinary official-client downloads on the image do not require a code refresh. No automatic commit/push is implied by this procedure.
+Availability note (2026-09-20): `register-models`, `verify-models`, and `model-status` are included in course candidate commit `d5ae90bab7c59da1b6055dee838dafa91056bfbc`, now pushed to GitHub but absent from the rehearsal image. The candidate passed 30 offline CPU tests and bundle verification; its new registration path has not completed a new-image GPU end-to-end run. Select the fixed commit below or a supplied matching bundle; cloning the old reference commit does not supply these commands. Ordinary official-client downloads on the image do not require a code refresh. No automatic commit/push is implied by this procedure.
 
 Keep the existing AutoDL community image as the runtime base. It provides CUDA, PyTorch, vLLM, the training environment, and an offline course fallback. Ordinary course-code, documentation, or Skill changes do not require republishing that image.
 
@@ -18,12 +18,12 @@ Use two separate paths:
 
 The instructor or course release must provide a tag or commit. Do not invent a ref and do not automatically follow `main` during class.
 
-The paired local course candidate and optional downloader commits are recorded in [compatibility.md](compatibility.md). Until they are pushed, use an explicitly supplied local bundle; do not execute the network checkout example below assuming the candidate is already on GitHub. Verify the supplied archive digest, then copy/extract it into a new directory, not over the image-bundled course or an existing dirty checkout. Run the code's own bundle verification before selecting it. Once a fixed ref is actually available remotely, the following checkout pattern applies.
+The paired course candidate and optional downloader commits are recorded in [compatibility.md](compatibility.md) and are available on GitHub. The fixed ref below is CPU-tested, not a claim of new GPU end-to-end acceptance. A supplied local bundle is also valid: verify its archive digest, then copy/extract it into a new directory, not over the image-bundled course or an existing dirty checkout. Run the code's own bundle verification before selecting it.
 
 ```bash
 export COURSE_BUNDLED=/root/distill-course
 export COURSE_LIVE=/root/distill-course-live
-export COURSE_REF='<tested tag or commit>'
+export COURSE_REF=d5ae90bab7c59da1b6055dee838dafa91056bfbc
 
 if ! test -d "$COURSE_LIVE/.git"; then
   git clone --filter=blob:none https://github.com/Beirana/distill-course.git "$COURSE_LIVE"

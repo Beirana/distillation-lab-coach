@@ -31,7 +31,7 @@ Fall back to the official course client or a prepared classroom host whenever a 
 - generate a parallel download plan only after the provider contract has been checked for the selected repository and host;
 - if parallel transfer is unsuitable or the skill unavailable, explain the reason and use a verified cache or official client. Do not insist on installing another skill as a prerequisite.
 
-Before an external parallel transfer, confirm `python scripts/course.py --help` exposes the local registration interface. It is included in the local course candidate recorded in [repository-sync.md](repository-sync.md), NOT in the 2026-09-20 image or historical reference commit. Verify that the candidate bundle or remote ref is actually available and disclose its CPU-tested, not newly GPU-end-to-end-tested scope. After transfer and byte/semantic verification, set the source-manifest variables to the actual files produced by the downloader and register:
+Before an external parallel transfer, confirm `python scripts/course.py --help` exposes the local registration interface. It is included in the published course candidate commit recorded in [repository-sync.md](repository-sync.md), NOT in the 2026-09-20 image or historical reference commit. Verify the selected bundle or checkout identity and disclose its CPU-tested, not newly GPU-end-to-end-tested scope. After transfer and byte/semantic verification, set the source-manifest variables to the actual files produced by the downloader and register:
 
 ```bash
 python scripts/course.py register-models \
