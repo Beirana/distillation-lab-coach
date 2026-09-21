@@ -10,9 +10,15 @@
 
 默认采用**终端引导模式**：用户在已经连接的终端或 Jupyter 中运行简短的环境检查、本地模型验证和 smoke 命令，Agent 逐行讲解并解读输出。用户要求代执行时再执行，不把教学请求自动变成无人值守代跑。远程 GPU 默认推荐复用用户本机已有别名和密钥的免密 SSH，除非用户选择其他路线。Jupyter 仍用于浏览文件，也可作为连接备用入口。
 
+## 先区分控制端与计算端
+
+区分运行 Agent 的电脑与实际推理、训练的环境。课堂默认采用已验证远程 GPU 镜像，可由 Windows、macOS 或 Linux 控制，本机无需安装训练依赖。用户选择本机计算时，支持三种系统的探索，不要求 SSH 回本机。生成/评测与训练/导出是两个功能角色，不强制使用两个环境管理器。
+
+优先复用可用环境，按实际兼容性选择 uv、venv、Conda 或已获准的容器，不锁死工具。未验证的本机适配安排课前或课后，分别标注官方文档支持、部分测试、端到端实测；不能仅放宽检查就声称新后端可用。在约定安装范围内，Agent 可自主选择常规检查与隔离依赖操作；系统/驱动变更、新费用、后端/模型/协议变化和课程代码适配应先沟通。只询问可行性不等于授权安装。
+
 ## 确定事实依据的优先级
 
-将教学镜像视为固定运行环境。课程更新进入独立代码目录，不意味着重装依赖或重制镜像。解释校验失败或更新课程时，阅读 [验证设计原则](references/validation-philosophy.md)：按受影响的阶段判断，区分真实能力失败与参考版本差异，继续不受影响的工作。无关网络、版本、目录布局警告不升级为全局阻塞；真实损坏或协议错误也不能改写成成功。
+在教学镜像路线中，将镜像视为固定运行环境。课程更新进入独立代码目录，不意味着重装依赖或重制镜像；这不禁止在新本机上按约定搭建隔离环境。解释校验失败或更新课程时，阅读 [验证设计原则](references/validation-philosophy.md)：按受影响的阶段判断，区分真实能力失败与参考版本差异，继续不受影响的工作。无关网络、版本、目录布局警告不升级为全局阻塞；真实损坏或协议错误也不能改写成成功。
 
 按以下顺序使用信息来源。
 
@@ -27,11 +33,13 @@
 
 推断当前阶段和眼下意图。仅当缺少的选择会实质性改变操作时，才提出一个简短问题。
 
+- **实验前准备** 阅读 [pre-class-preparation.md](references/pre-class-preparation.md)，确认远程或本机计算、实际客户端系统、Agent 宿主及各阶段就绪情况。使用 WorkBuddy 时再读 [workbuddy-onboarding.md](references/workbuddy-onboarding.md)。只要求准备时，不自动开付费实例、下载模型或运行 smoke。
+
 - **60 分钟课堂** 阅读 [classroom-support.md](references/classroom-support.md) 以及 [stages.md](references/stages.md) 中的相关部分。课堂现场依次确认仓库和主机，讲清基本概念，完成 smoke 生成、训练前评估、配置检查、两步 LoRA 训练、导出和 student 评估，随后进行预先准备的双服务定性对比。正式的 500 样本训练留到课后进行。
 - **继续或运行实验** 阅读 [stages.md](references/stages.md)，从第一个尚未完成的阶段继续，并在每条命令执行后报告证据。不要仅为了让演示显得更整洁而重新运行已经完成的工作。
 - **解释、教学或设计问题** 阅读 [classroom-support.md](references/classroom-support.md) 和 [files.md](references/files.md)。解释当前阶段，并使用满足需要的最小产物或可视化。
-- **搭建环境或适配硬件和模型** 阅读 [environments.md](references/environments.md)。依据实际配置调整资源检查，同时保持实验的语义不变量。
-- **为 Agent 配置本地 SSH** 仅当不存在已经验证的主机别名时，才阅读 [ssh-onboarding.md](references/ssh-onboarding.md)。
+- **搭建环境或适配硬件和模型** 阅读 [environments.md](references/environments.md)；在自己的 Windows、macOS 或 Linux 上计算时，再读 [local-compute.md](references/local-compute.md) 的对应分支。依据需要适配真实代码与资源检查，保持实验的语义不变量。
+- **为 Agent 配置本地 SSH** 不存在当前已验证别名，或客户端环境/主机身份变化时，阅读 [ssh-onboarding.md](references/ssh-onboarding.md)。复用别名不证明仍是同一实例；仍然有效的别名只做针对性连接检查，不重复装密钥。
 - **运行正式的 500 样本后续实验** 使用 [stages.md](references/stages.md) 中的第 9 至第 14 阶段。必须新建一次正式运行；绝不能直接在课堂 smoke 运行上扩展。
 - **诊断故障** 阅读 [troubleshooting.md](references/troubleshooting.md)，识别准确阶段，保留最初的失败证据，并提出最小修复方案。
 - **缺模型或准备下载模型** 已有完整文件先验证复用；否则默认使用课程的官方 ModelScope 下载器。阅读 [下载规划](references/optional-download-acceleration.md)，了解计时、已有文件处理与可选替代路线。`model-download-accelerator` 仅作备选，不是安装前提，也不要求默认先探测：官方下载反复失败、停滞、持续过慢且影响可用时间，或用户主动要求时，再评估。不要为换工具中断健康传输。分别记录下载耗时与校验结果，没有受控基线就不承诺加速。

@@ -22,6 +22,8 @@
 
 ## 按任务和节奏选择路线
 
+课前从零准备见 [准备流程](references/pre-class-preparation.md)，WorkBuddy 宿主见 [云端获取与加载](references/workbuddy-onboarding.md)。不假定本地已有技能；当前 GitHub 仓库私有，下载需已有授权或教师安排访问。教案和教师备课材料不随此技能分发，技能应能独立引导准备和实验。
+
 | 路线 | 适用任务 | 运行方式 |
 |---|---|---|
 | 课堂引导 | 在有限课时内完成 smoke，并保留少量理解检查 | 分阶段推进，短暂等待回答，必要时提示后继续 |
@@ -33,11 +35,15 @@
 
 这些路线只改变节奏和回答形态，不改变权限。任何使用者都沿同一条实验状态机前进，也都要遵守相同的凭据边界、运行隔离和证据要求。
 
-## 设计原则：镜像固定，课程包独立更新
+## 设计原则：先分控制端与计算端，镜像路线保持稳定
+
+Windows、macOS、Linux 都可作远程控制端，也可按自身能力探索本机计算。远程控制不要求本地 CUDA；本机计算不要求 SSH 回自己。三系统的生成、训练、导出与适配边界见 [本机计算](references/local-compute.md)。环境管理器不锁死，生成与训练是两类功能角色；自有环境优先复用，必要时按约定隔离搭建。新后端不能仅靠放宽检查宣称兼容。
+
+本次跨平台/本机计算和 WorkBuddy 指引是文档核对后的候选方案，并非三系统 GPU 全链或 WorkBuddy 已验收声明。用户确认后可以探索，实际验证按阶段记录；课堂主选仍是已验证远程镜像。
 
 镜像暂不更新。需要新能力时，Coach 引导获取配套课程包，复用原生成/训练环境和模型数据；不因路径、补丁版本或无关网络差异自动重装。验证按当前阶段的真实能力判断，警告只影响相关工作，模型损坏和正式评测协议仍严格保护。完整中文说明见 [验证设计原则](references/validation-philosophy.md)，获取与切换见 [课程包更新](references/repository-sync.md)，配套提交见 [兼容性记录](references/compatibility.md)。本地提交与 GitHub 推送是两件事，不能声称未推送的新提交已可远程拉取。
 
-课堂节奏与展示方法见 [references/classroom-support.md](references/classroom-support.md)。生成端、训练端和硬件适配见 [references/environments.md](references/environments.md)。本地 Agent 尚未建立可验证的 SSH 主机别名时，再读取 [references/ssh-onboarding.md](references/ssh-onboarding.md)。
+课堂节奏与展示方法见 [references/classroom-support.md](references/classroom-support.md)。生成端、训练端和硬件适配见 [references/environments.md](references/environments.md)。尚无当前已验证 SSH 别名，或客户端/主机身份变化时，再读取 [跨平台 SSH](references/ssh-onboarding.md)；不把固定实例名写进准备流程。
 
 ## 课堂主线
 
@@ -123,6 +129,7 @@ git clone https://github.com/Beirana/distillation-lab-coach.git
 |---|---|---|
 | Codex | `~/.codex/skills/distillation-lab-coach/` | 以当前 Codex 项目配置和官方说明为准 |
 | Claude Code | `~/.claude/skills/distillation-lab-coach/` | `.claude/skills/distillation-lab-coach/` |
+| WorkBuddy（待本轮试课） | 优先当前界面的完整技能包导入 | 目录发现与实际加载需验证，见 [准备指引](references/workbuddy-onboarding.md) |
 | 其他兼容宿主 | 使用该宿主文档规定的 Skill 目录 | 使用该宿主文档规定的项目目录 |
 
 目录布局相似不能证明宿主兼容。正式声明支持某个宿主以前，需要实际验证 Skill 发现、指令加载、终端与 SSH 权限以及审批行为。`agents/openai.yaml` 只提供可选界面元数据，忽略它不会改变实验流程。进一步说明见 [references/compatibility.md](references/compatibility.md)。
@@ -146,6 +153,9 @@ distillation-lab-coach/
     ├── files.md
     ├── classroom-support.md
     ├── environments.md
+    ├── pre-class-preparation.md
+    ├── local-compute.md
+    ├── workbuddy-onboarding.md
     ├── ssh-onboarding.md
     ├── troubleshooting.md
     ├── single-sample-walkthrough.md

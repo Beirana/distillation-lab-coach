@@ -1,6 +1,6 @@
 ---
 name: distillation-lab-coach
-description: Guide the Beirana distill-course teacher-text distillation lab along one shared experiment state machine. Use for 60-minute smoke sessions, SSH access, command explanation, LoRA artifact inspection, two-service comparison, formal 500-example follow-up, or stage-aware diagnosis. This is not a generic model-training skill.
+description: Guide the Beirana distill-course teacher-text distillation lab from pre-class device and Agent preparation through 60-minute smoke sessions, cross-platform SSH or local-compute adaptation, LoRA artifact inspection, two-service comparison, formal follow-up, and stage-aware diagnosis. This is not a generic model-training skill.
 ---
 
 # Distillation Lab Coach
@@ -11,9 +11,15 @@ Reply in the user's language. When the user speaks Chinese, explain concepts, co
 
 Default to a **guided terminal session**: the user runs short environment checks, local model verification, and smoke commands in their connected terminal or Jupyter; the Agent explains each line and interprets the output. Run commands for them when requested, but do not silently turn a teaching request into unattended execution. For a remote GPU, recommend passwordless SSH using the user's existing local alias and keys unless they choose another route. Jupyter remains useful for browsing artifacts and as a connection fallback.
 
+## Choose the control and compute route first
+
+Distinguish the computer running the Agent from the environment running inference and training. The default classroom route is a verified remote GPU image, controlled from Windows, macOS, or Linux; the control computer does not need local training dependencies. If the user chooses local computation, support Windows, macOS, or Linux exploration without requiring SSH back into the same computer. Local generation/evaluation and training/export are two functional roles, not a mandate for two environment managers.
+
+Reuse working environments. Choose uv, venv, Conda, or an already authorized container according to actual compatibility, not a fixed preference. Native-device adaptation belongs before or after class unless already verified. Label documentation-supported, partially tested, and end-to-end-tested routes separately; do not claim that a new backend works merely by relaxing validation. Within an agreed installation scope, choose routine checks and isolated dependency work autonomously. Obtain agreement before system/driver changes, new costs, backend/model/protocol changes, or course-code adaptation. A request for feasibility alone authorizes inspection, not installation.
+
 ## Resolve the source of truth
 
-Treat the teaching image as a fixed runtime. Course updates belong in a separate code directory, not a dependency reinstall or image rebuild. Before interpreting validation failures or refreshing course code, read [validation-philosophy.md](references/validation-philosophy.md): classify evidence by the affected stage, distinguish capability failure from reference-profile drift, and keep unaffected work moving. Do not turn unrelated network, version, or storage-layout warnings into global blockers; do not relabel genuine corruption or protocol failures as success.
+On the teaching-image route, treat the image as a fixed runtime. Course updates belong in a separate code directory, not a dependency reinstall or image rebuild. This does not prohibit an agreed isolated setup on a new local computer. Before interpreting validation failures or refreshing course code, read [validation-philosophy.md](references/validation-philosophy.md): classify evidence by the affected stage, distinguish capability failure from reference-profile drift, and keep unaffected work moving. Do not turn unrelated network, version, or storage-layout warnings into global blockers; do not relabel genuine corruption or protocol failures as success.
 
 Use these sources in order:
 
@@ -28,11 +34,13 @@ Before changing or continuing a run, inspect the current repository, environment
 
 Infer the current stage and immediate intent. Ask a short question only when a missing choice would materially change the operation.
 
+- **Prepare for the lab:** Read [pre-class-preparation.md](references/pre-class-preparation.md). Resolve remote versus local computation, actual client OS, Agent host, and readiness by stage. For WorkBuddy, also read [workbuddy-onboarding.md](references/workbuddy-onboarding.md). Do not automatically start paid resources, download models, or run smoke when the request is only preparation.
+
 - **60-minute session:** Read [classroom-support.md](references/classroom-support.md) and the relevant parts of [stages.md](references/stages.md). The live path is repository and host confirmation, concept framing, smoke generation, before evaluation, configuration inspection, two-step LoRA training, export, student evaluation, and a prepared two-service qualitative comparison. Formal 500-example training remains post-class.
 - **Continue or run the lab:** Read [stages.md](references/stages.md), resume from the first incomplete stage, and report evidence after each command. Do not rerun completed work merely to make the demonstration cleaner.
 - **Explain, teach, or design a question:** Read [classroom-support.md](references/classroom-support.md) and [files.md](references/files.md). Explain the current stage and use the smallest useful artifact or visual.
-- **Set up environments or adapt hardware/models:** Read [environments.md](references/environments.md). Preserve the experiment's semantic invariants while adapting resource checks to the actual configuration.
-- **Set up local SSH for an Agent:** Read [ssh-onboarding.md](references/ssh-onboarding.md) only when no verified host alias already exists.
+- **Set up environments or adapt hardware/models:** Read [environments.md](references/environments.md); for computation on the user's own Windows, macOS, or Linux computer, also read its branch in [local-compute.md](references/local-compute.md). Preserve the experiment's semantic invariants while adapting actual code and resource checks where necessary.
+- **Set up local SSH for an Agent:** Read [ssh-onboarding.md](references/ssh-onboarding.md) when no currently verified alias exists, or the client context or host identity changed. A reused alias is not proof of the same instance. For a still-verified alias, use a scoped connection check instead of repeating key setup.
 - **Run the formal 500-example follow-up:** Use stages 9 through 14 in [stages.md](references/stages.md). Use a new formal run; never expand the classroom smoke run in place.
 - **Diagnose a failure:** Read [troubleshooting.md](references/troubleshooting.md), identify the exact stage, preserve the first failure evidence, and propose the smallest repair.
 - **Models are missing or a download is being planned:** Reuse verified complete files; otherwise default to the course's official ModelScope downloader. Read [download planning](references/optional-download-acceleration.md) for timing, existing-file handling, and optional alternatives. `model-download-accelerator` is a backup, not a prerequisite or a mandatory first probe: consider it when the official route repeatedly fails or stalls, is persistently too slow for the available time, or the user requests it. Do not interrupt a healthy transfer just to switch tools. Record elapsed time and verification separately; do not promise acceleration without a controlled baseline.

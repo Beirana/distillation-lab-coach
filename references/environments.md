@@ -2,6 +2,8 @@
 
 Read this reference when checking a host, explaining the two environments, or adapting the reference experiment to different models, GPUs, paths, or precision.
 
+For initial device/Agent preparation use [pre-class-preparation.md](pre-class-preparation.md). For actual computation on the user's own Windows, macOS or Linux machine, read its branch in [local-compute.md](local-compute.md). The two tables below describe verified functional roles, not universal installation locks or required paths. A proven-compatible single environment may serve both roles; choose uv/venv/Conda or authorized containers according to the host. Remote control alone requires neither local GPU nor these dependencies.
+
 ## Establish actual paths first
 
 Use the checked-out course documentation and the current shell. The tested defaults are:
@@ -16,6 +18,8 @@ cd "$COURSE_REPO"
 `COURSE_DATA_ROOT` is the logical course work root. In the tested AutoDL layout, `models/` and `cache/` may be symbolic links to a larger persistent disk while `data/`, `runs/`, and `environment/` stay under the work root. Do not call the entire work root a data disk.
 
 Keep `COURSE_TRAIN_ENV` unset when the current Python environment is the verified training environment. Set it only when a real separate environment contains `llamafactory-cli`.
+
+Use the actual interpreter/prefix, not an environment display name. Separate shell invocations do not automatically retain activation. Alternate local backends require real execution-code adaptation; the reference CUDA/BF16 checks below are not universal readiness tests for MPS/MLX/ROCm/XPU.
 
 ## Tested generation and evaluation profile
 

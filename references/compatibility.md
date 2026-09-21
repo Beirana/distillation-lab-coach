@@ -33,6 +33,8 @@ Do not assume those local materials are present. If a task refers to an archived
 
 ## Optional host adapters
 
+WorkBuddy is a candidate classroom host, with source retrieval, package import and scoped checks in [workbuddy-onboarding.md](workbuddy-onboarding.md). Linux compute support does not establish a Linux WorkBuddy desktop client. Cross-platform SSH and native Windows/WSL, macOS MPS/MLX, and alternate Linux compute plans are documentation-informed; they have not inherited GPU end-to-end acceptance from the Windows-to-AutoDL rehearsal. Verify each actual host/backend separately.
+
 `agents/openai.yaml` provides optional Codex or OpenAI presentation metadata. Removing or ignoring it does not change the core workflow. Other hosts may add their own metadata, but an adapter must not weaken the experiment contract, safety gates, evidence requirements, or credential boundaries.
 
 ## Installation model
